@@ -17,6 +17,14 @@ The latest code straight from the repository:
 pip install git+https://github.com/waikato-datamining/image-dataset-converter-paddle.git
 ```
 
+## Dataset formats
+
+The following dataset formats are supported:
+
+| Domain               | Format                                   | Read                           | Write                        | 
+|:---------------------|:-----------------------------------------|:-------------------------------|:-----------------------------| 
+| Image classification | [Paddle](formats/imageclassification.md) | [Y](plugins/from-paddle-ic.md) | [Y](plugins/to-paddle-ic.md) | 
+
 
 ## Plugins
 
