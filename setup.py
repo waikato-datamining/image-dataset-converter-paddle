@@ -13,7 +13,7 @@ def _read(f):
 
 
 setup(
-    name="image-dataset-converter-paddle",
+    name="image_dataset_converter_paddle",
     description="image-dataset-converter plugins for Paddle (PArallel Distributed Deep LEarning).",
     long_description=(
             _read('DESCRIPTION.rst') + b'\n' +
@@ -31,7 +31,7 @@ setup(
     },
     packages=find_namespace_packages(where='src'),
     install_requires=[
-        "image-dataset-converter",
+        "image_dataset_converter",
     ],
     version="0.0.1",
     author='Peter Reutemann',
