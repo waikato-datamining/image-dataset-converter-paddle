@@ -8,7 +8,7 @@ plugins for [Paddle (PArallel Distributed Deep LEarning)](https://github.com/Pad
 Via PyPI:
 
 ```bash
-pip install image-dataset-converter-paddle
+pip install image_dataset_converter_paddle
 ```
 
 The latest code straight from the repository:
