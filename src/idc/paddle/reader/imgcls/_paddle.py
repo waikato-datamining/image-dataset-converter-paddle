@@ -106,7 +106,7 @@ class PaddleImageClassificationReader(Reader):
                         except:
                             self.logger().warning("Failed to parse: %s" % line)
 
-        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.report")
+        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt")
 
     def read(self) -> Iterable:
         """
