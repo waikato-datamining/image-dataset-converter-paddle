@@ -21,11 +21,11 @@ options:
                         The custom name to use for the logger, uses the plugin
                         name by default (default: None)
   -i [INPUT ...], --input [INPUT ...]
-                        Path to the report file(s) to read; glob syntax is
+                        Path to the text file(s) to read; glob syntax is
                         supported (default: None)
   -I [INPUT_LIST ...], --input_list [INPUT_LIST ...]
-                        Path to the text file(s) listing the report files to
-                        use (default: None)
+                        Path to the text file(s) listing the text files to use
+                        (default: None)
   -m FILE, --id_label_map FILE
                         The mapping between label ID and text (ID <space>
                         text) (default: None)
