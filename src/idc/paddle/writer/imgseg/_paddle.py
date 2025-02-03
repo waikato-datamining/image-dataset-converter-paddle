@@ -5,7 +5,8 @@ from typing import List
 from wai.logging import LOGGING_WARNING
 
 from idc.api import ImageSegmentationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
-    add_annotations_only_param, PALETTE_AUTO, PALETTES, generate_palette_list, save_image, to_indexedpng
+    add_annotations_only_param, save_image, to_indexedpng
+from simple_palette_utils import generate_palette_list, PALETTE_AUTO, PALETTES
 
 DEFAULT_FILE_LIST = "data.txt"
 
