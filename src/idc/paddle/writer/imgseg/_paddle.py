@@ -6,7 +6,7 @@ from wai.logging import LOGGING_WARNING
 
 from idc.api import ImageSegmentationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
     add_annotations_only_param, save_image, to_indexedpng
-from simple_palette_utils import generate_palette_list, PALETTE_AUTO, PALETTES
+from simple_palette_utils import generate_palette_list, PALETTE_AUTO, palettes
 
 DEFAULT_FILE_LIST = "data.txt"
 
@@ -89,7 +89,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         parser.add_argument("-f", "--files", metavar="NAME", type=str, default=DEFAULT_FILE_LIST, help="The text file to store the relation of images with their label indices in, e.g., 'data.txt'", required=False)
         parser.add_argument("-i", "--img_relative_path", metavar="PATH", type=str, default=DEFAULT_IMAGES_RELATIVE_PATH, help="The relative path to store the images under, e.g., 'img'", required=False)
         parser.add_argument("-a", "--ann_relative_path", metavar="PATH", type=str, default=DEFAULT_ANNOTATIONS_RELATIVE_PATH, help="The relative path to store the annotations under, e.g., 'ann'", required=False)
-        parser.add_argument("-p", "--palette", metavar="PALETTE", type=str, default=PALETTE_AUTO, help="The palette to use; either palette name (%s) or comma-separated list of R,G,B values." % "|".join(PALETTES), required=False)
+        parser.add_argument("-p", "--palette", metavar="PALETTE", type=str, default=PALETTE_AUTO, help="The palette to use; either palette name (%s) or comma-separated list of R,G,B values." % "|".join(palettes()), required=False)
         parser.add_argument("--labels", metavar="NAME", type=str, default=DEFAULT_LABELS_LIST, help="The name of the labels text file (no path), e.g., 'labels.txt'.", required=False)
         add_annotations_only_param(parser)
         return parser
