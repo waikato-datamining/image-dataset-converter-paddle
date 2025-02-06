@@ -164,7 +164,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
 
             # records labels
             if len(self._labels) == 0:
-                self._labels.extend(item.annotation.labels_file)
+                self._labels.extend(item.annotation.labels)
 
             # relative file names
             img_relative_name = os.path.join(self.img_relative_path, item.image_name)
