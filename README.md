@@ -24,6 +24,7 @@ The following dataset formats are supported:
 | Domain               | Format                                   | Read                           | Write                        | 
 |:---------------------|:-----------------------------------------|:-------------------------------|:-----------------------------| 
 | Image classification | [Paddle](formats/imageclassification.md) | [Y](plugins/from-paddle-ic.md) | [Y](plugins/to-paddle-ic.md) | 
+| Image segmentation   | [Paddle](formats/imagesegmentation.md)   | [Y](plugins/from-paddle-is.md) | [Y](plugins/to-paddle-is.md) | 
 
 
 ## Plugins
