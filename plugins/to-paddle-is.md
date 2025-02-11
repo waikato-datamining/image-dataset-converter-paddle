@@ -43,9 +43,9 @@ options:
                         The relative path to store the annotations under,
                         e.g., 'ann' (default: ann)
   -p PALETTE, --palette PALETTE
-                        The palette to use; either palette name (auto|grayscal
-                        e|x11|light|dark|colorblind8|colorblind12|colorblind15
-                        |colorblind24) or comma-separated list of R,G,B
+                        The palette to use; either palette name (auto|colorbli
+                        nd12|colorblind15|colorblind24|colorblind8|dark|graysc
+                        ale|light|x11) or comma-separated list of R,G,B
                         values. (default: auto)
   --labels NAME         The name of the labels text file (no path), e.g.,
                         'labels.txt'. (default: labels.txt)
