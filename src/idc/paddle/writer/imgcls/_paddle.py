@@ -4,7 +4,7 @@ from typing import List
 
 from wai.logging import LOGGING_WARNING
 
-from seppl import placeholder_list, InputBasedPlaceholderSupporter
+from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
 from idc.api import ImageClassificationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
     add_annotations_only_param
 
@@ -141,7 +141,7 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
                 split = self.splitter.next()
                 sub_dir = os.path.join(sub_dir, split)
             if not os.path.exists(sub_dir):
-                self.logger().info("Creating sub dir: %s" % sub_dir)
+                self.logger().info("Creating dir: %s" % sub_dir)
                 os.makedirs(sub_dir)
             if not self.annotations_only:
                 path = os.path.join(sub_dir, self.relative_path)

@@ -2,7 +2,7 @@ import argparse
 import os.path
 from typing import List, Iterable, Union
 
-from seppl import PlaceholderSupporter, placeholder_list
+from seppl.placeholders import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
