@@ -2,6 +2,7 @@ import argparse
 import os.path
 from typing import List, Iterable, Union
 
+from seppl import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
@@ -9,7 +10,7 @@ from idc.api import ImageSegmentationData, load_image_from_file, from_indexedpng
 from idc.api import Reader
 
 
-class PaddleImageSegmentationReader(Reader):
+class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
                  labels_file: str = None, labels: List[str] = None,
@@ -64,9 +65,9 @@ class PaddleImageSegmentationReader(Reader):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported", required=False, nargs="*")
-        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use", required=False, nargs="*")
-        parser.add_argument("--labels_file", metavar="FILE", type=str, default=None, help="The file with the labels associated with the indices (incl. background)", required=False)
+        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("--labels_file", metavar="FILE", type=str, default=None, help="The file with the labels associated with the indices (incl. background); " + placeholder_list(obj=self), required=False)
         parser.add_argument("--labels", metavar="LABEL", type=str, default=None, help="The labels that the indices represent (incl background).", nargs="*")
         return parser
 
@@ -103,8 +104,9 @@ class PaddleImageSegmentationReader(Reader):
         if self.labels_file is not None:
             self._labels = list()
             self._label_mapping = dict()
-            self.logger().info("Loading labels: %s" % self.labels_file)
-            with (open(self.labels_file) as fp):
+            labels_file = self.session.expand_placeholders(self.labels_file)
+            self.logger().info("Loading labels: %s" % labels_file)
+            with (open(labels_file) as fp):
                 for line in fp.readlines():
                     line = line.strip()
                     if len(line) > 0:

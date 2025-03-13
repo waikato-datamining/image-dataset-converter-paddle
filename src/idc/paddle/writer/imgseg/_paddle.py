@@ -4,6 +4,7 @@ from typing import List
 
 from wai.logging import LOGGING_WARNING
 
+from seppl import placeholder_list, InputBasedPlaceholderSupporter
 from idc.api import ImageSegmentationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
     add_annotations_only_param, save_image, to_indexedpng
 from simple_palette_utils import generate_palette_list, PALETTE_AUTO, palettes
@@ -17,7 +18,7 @@ DEFAULT_IMAGES_RELATIVE_PATH = "img"
 DEFAULT_ANNOTATIONS_RELATIVE_PATH = "ann"
 
 
-class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWriter):
+class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWriter, InputBasedPlaceholderSupporter):
 
     def __init__(self, output_dir: str = None, files: str = None, labels: str = None, img_relative_path: str = None,
                  ann_relative_path: str = None, palette: str = None, annotations_only: bool = None,
@@ -58,6 +59,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         self._files = None
         self._palette_list = None
         self._labels = None
+        self._output_dir_created = False
 
     def name(self) -> str:
         """
@@ -85,7 +87,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there.", required=True)
+        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there. " + placeholder_list(obj=self), required=True)
         parser.add_argument("-f", "--files", metavar="NAME", type=str, default=DEFAULT_FILE_LIST, help="The text file to store the relation of images with their label indices in, e.g., 'data.txt'", required=False)
         parser.add_argument("-i", "--img_relative_path", metavar="PATH", type=str, default=DEFAULT_IMAGES_RELATIVE_PATH, help="The relative path to store the images under, e.g., 'img'", required=False)
         parser.add_argument("-a", "--ann_relative_path", metavar="PATH", type=str, default=DEFAULT_ANNOTATIONS_RELATIVE_PATH, help="The relative path to store the annotations under, e.g., 'ann'", required=False)
@@ -124,9 +126,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         Initializes the processing, e.g., for opening files or databases.
         """
         super().initialize()
-        if not os.path.exists(self.output_dir):
-            self.logger().info("Creating output dir: %s" % self.output_dir)
-            os.makedirs(self.output_dir)
+        self._output_dir_created = False
         if self.files is None:
             self.files = DEFAULT_FILE_LIST
         if self.labels is None:
@@ -147,15 +147,17 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
 
         :param data: the data to write (single record or iterable of records)
         """
+        output_dir = self.session.expand_placeholders(self.output_dir)
+        if (not self._output_dir_created) and (not os.path.exists(output_dir)):
+            self._output_dir_created = True
+            self.logger().info("Creating output dir: %s" % output_dir)
+            os.makedirs(output_dir)
         for item in make_list(data):
             split = ''
             if self.splitter is not None:
                 split = self.splitter.next()
-            if not os.path.exists(self.output_dir):
-                self.logger().info("Creating dir: %s" % self.output_dir)
-                os.makedirs(self.output_dir)
             if not self.annotations_only:
-                path = os.path.join(self.output_dir, self.img_relative_path)
+                path = os.path.join(output_dir, self.img_relative_path)
                 if not os.path.exists(path):
                     self.logger().info("Creating image dir: %s" % path)
                     os.makedirs(path)
@@ -173,11 +175,11 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
             # update file map
             self._files[split].append(img_relative_name + " " + ann_relative_name)
 
-            path = os.path.join(self.output_dir, img_relative_name)
+            path = os.path.join(output_dir, img_relative_name)
             if not self.annotations_only:
                 self.logger().info("Writing image to: %s" % path)
                 item.save_image(path)
-            path = os.path.join(self.output_dir, ann_relative_name)
+            path = os.path.join(output_dir, ann_relative_name)
             ann = to_indexedpng(item.image_width, item.image_height, item.annotation, self._palette_list, background=0)
             self.logger().info("Writing annotations to: %s" % path)
             save_image(ann, path, make_dirs=True)
@@ -188,11 +190,12 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         """
         super().finalize()
         first = True
+        output_dir = self.session.expand_placeholders(self.output_dir)
         for sub_set in self._files:
             # write label list
             if first:
                 first = False
-                path = os.path.join(self.output_dir, self.labels)
+                path = os.path.join(output_dir, self.labels)
                 self.logger().info("Writing label list: %s" % path)
                 with open(path, "w") as fp:
                     for label in self._labels:
@@ -201,9 +204,9 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
 
             # write file list
             if len(sub_set) > 0:
-                path = os.path.join(self.output_dir, os.path.splitext(self.files)[0] + "-" + sub_set + os.path.splitext(self.files)[1])
+                path = os.path.join(output_dir, os.path.splitext(self.files)[0] + "-" + sub_set + os.path.splitext(self.files)[1])
             else:
-                path = os.path.join(self.output_dir, self.files)
+                path = os.path.join(output_dir, self.files)
             self.logger().info("Writing file list: %s" % path)
             with open(path, "w") as fp:
                 for line in self._files[sub_set]:

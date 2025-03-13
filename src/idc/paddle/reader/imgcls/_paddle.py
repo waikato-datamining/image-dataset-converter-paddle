@@ -2,6 +2,7 @@ import argparse
 import os.path
 from typing import List, Iterable, Union
 
+from seppl import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
@@ -9,7 +10,7 @@ from idc.api import ImageClassificationData
 from idc.api import Reader
 
 
-class PaddleImageClassificationReader(Reader):
+class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
                  id_label_map: str = None, logger_name: str = None, logging_level: str = LOGGING_WARNING):
@@ -59,9 +60,9 @@ class PaddleImageClassificationReader(Reader):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported", required=False, nargs="*")
-        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use", required=False, nargs="*")
-        parser.add_argument("-m", "--id_label_map", metavar="FILE", type=str, default=None, help="The mapping between label ID and text (ID <space> text)", required=False)
+        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-m", "--id_label_map", metavar="FILE", type=str, default=None, help="The mapping between label ID and text (ID <space> text); " + placeholder_list(obj=self), required=False)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):
@@ -94,8 +95,9 @@ class PaddleImageClassificationReader(Reader):
         self._id_label_map = None
         if self.id_label_map is not None:
             self._id_label_map = dict()
-            self.logger().info("Loading ID/label map: %s" % self.id_label_map)
-            with (open(self.id_label_map) as fp):
+            id_label_map = self.session.expand_placeholders(self.id_label_map)
+            self.logger().info("Loading ID/label map: %s" % id_label_map)
+            with (open(id_label_map) as fp):
                 for line in fp.readlines():
                     line = line.strip()
                     if (len(line) > 0) and (" " in line):

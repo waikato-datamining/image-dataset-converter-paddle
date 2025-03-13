@@ -4,6 +4,7 @@ from typing import List
 
 from wai.logging import LOGGING_WARNING
 
+from seppl import placeholder_list, InputBasedPlaceholderSupporter
 from idc.api import ImageClassificationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
     add_annotations_only_param
 
@@ -14,7 +15,7 @@ DEFAULT_FILE_LABEL_MAP = "annotations.txt"
 DEFAULT_RELATIVE_PATH = "images"
 
 
-class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWriter):
+class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWriter, InputBasedPlaceholderSupporter):
 
     def __init__(self, output_dir: str = None, file_label_map: str = None, relative_path: str = None,
                  id_label_map: str = None, annotations_only: bool = None,
@@ -48,6 +49,7 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
         self.annotations_only = annotations_only
         self._file_label_maps = None
         self._id_label_map = None
+        self._output_dir_created = False
 
     def name(self) -> str:
         """
@@ -75,7 +77,7 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there.", required=True)
+        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there. " + placeholder_list(obj=self), required=True)
         parser.add_argument("-f", "--file_label_map", metavar="NAME", type=str, default=DEFAULT_FILE_LABEL_MAP, help="The text file to store the relation of images with their label indices in, e.g., 'annotations.txt'", required=False)
         parser.add_argument("-p", "--relative_path", metavar="PATH", type=str, default=DEFAULT_RELATIVE_PATH, help="The relative path to the annotations text file to store the images under, e.g., 'images'", required=False)
         parser.add_argument("-m", "--id_label_map", metavar="NAME", type=str, default=DEFAULT_ID_LABEL_MAP, help="The name of the ID/label text mapping text file (no path), e.g., 'labels.map'.", required=False)
@@ -110,9 +112,7 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
         Initializes the processing, e.g., for opening files or databases.
         """
         super().initialize()
-        if not os.path.exists(self.output_dir):
-            self.logger().info("Creating output dir: %s" % self.output_dir)
-            os.makedirs(self.output_dir)
+        self._output_dir_created = False
         if self.file_label_map is None:
             self.file_label_map = DEFAULT_FILE_LABEL_MAP
         if self.id_label_map is None:
@@ -130,8 +130,13 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
 
         :param data: the data to write (single record or iterable of records)
         """
+        output_dir = self.session.expand_placeholders(self.output_dir)
+        if (not self._output_dir_created) and (not os.path.exists(output_dir)):
+            self._output_dir_created = True
+            self.logger().info("Creating output dir: %s" % output_dir)
+            os.makedirs(output_dir)
         for item in make_list(data):
-            sub_dir = self.output_dir
+            sub_dir = output_dir
             if self.splitter is not None:
                 split = self.splitter.next()
                 sub_dir = os.path.join(sub_dir, split)
