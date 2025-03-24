@@ -7,7 +7,7 @@ Loads the image classification from the specified text files listing image (with
 ```
 usage: from-paddle-ic [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                       [-N LOGGER_NAME] [-i [INPUT ...]] [-I [INPUT_LIST ...]]
-                      [-m FILE]
+                      [--resume_from RESUME_FROM] [-m FILE]
 
 Loads the image classification from the specified text files listing image
 (with relative path) and the associate label ID. The label ID to text mapping
@@ -28,6 +28,9 @@ options:
                         Path to the text file(s) listing the text files to
                         use; Supported placeholders: {HOME}, {CWD}, {TMP}
                         (default: None)
+  --resume_from RESUME_FROM
+                        Glob expression matching the file to resume from,
+                        e.g., '*/012345.txt' (default: None)
   -m FILE, --id_label_map FILE
                         The mapping between label ID and text (ID <space>
                         text); Supported placeholders: {HOME}, {CWD}, {TMP}

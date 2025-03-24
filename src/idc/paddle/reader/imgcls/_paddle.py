@@ -13,7 +13,8 @@ from idc.api import Reader
 class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
-                 id_label_map: str = None, logger_name: str = None, logging_level: str = LOGGING_WARNING):
+                 id_label_map: str = None, resume_from: str = None,
+                 logger_name: str = None, logging_level: str = LOGGING_WARNING):
         """
         Initializes the reader.
 
@@ -21,6 +22,8 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         :param source_list: the file(s) with filename(s)
         :param id_label_map: the file with the mapping of label ID and label string
         :type id_label_map: str
+        :param resume_from: the file to resume from (glob)
+        :type resume_from: str
         :param logger_name: the name to use for the logger
         :type logger_name: str
         :param logging_level: the logging level to use
@@ -30,6 +33,7 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         self.source = source
         self.source_list = source_list
         self.id_label_map = id_label_map
+        self.resume_from = resume_from
         self._inputs = None
         self._current_input = None
         self._id_label_map = None
@@ -62,6 +66,7 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         parser = super()._create_argparser()
         parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
         parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("--resume_from", type=str, help="Glob expression matching the file to resume from, e.g., '*/012345.txt'", required=False)
         parser.add_argument("-m", "--id_label_map", metavar="FILE", type=str, default=None, help="The mapping between label ID and text (ID <space> text); " + placeholder_list(obj=self), required=False)
         return parser
 
@@ -76,6 +81,7 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         self.source = ns.input
         self.source_list = ns.input_list
         self.id_label_map = ns.id_label_map
+        self.resume_from = ns.resume_from
 
     def generates(self) -> List:
         """
@@ -108,7 +114,7 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
                         except:
                             self.logger().warning("Failed to parse: %s" % line)
 
-        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt")
+        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt", resume_from=self.resume_from)
 
     def read(self) -> Iterable:
         """

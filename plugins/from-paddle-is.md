@@ -7,7 +7,8 @@ Loads the image segmentation from the specified text files listing image (JPG wi
 ```
 usage: from-paddle-is [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                       [-N LOGGER_NAME] [-i [INPUT ...]] [-I [INPUT_LIST ...]]
-                      [--labels_file FILE] [--labels [LABEL ...]]
+                      [--resume_from RESUME_FROM] [--labels_file FILE]
+                      [--labels [LABEL ...]]
 
 Loads the image segmentation from the specified text files listing image (JPG
 with relative path) and annotation image (indexed PNG with relative path). The
@@ -28,6 +29,9 @@ options:
                         Path to the text file(s) listing the text files to
                         use; Supported placeholders: {HOME}, {CWD}, {TMP}
                         (default: None)
+  --resume_from RESUME_FROM
+                        Glob expression matching the file to resume from,
+                        e.g., '*/012345.txt' (default: None)
   --labels_file FILE    The file with the labels associated with the indices
                         (incl. background); Supported placeholders: {HOME},
                         {CWD}, {TMP} (default: None)
