@@ -154,6 +154,10 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
             # relative file name
             relative_name = os.path.join(self.relative_path, item.image_name)
 
+            # space in file name?
+            if " " in relative_name:
+                raise Exception("Image name cannot contain space(s): %s" % relative_name)
+
             # update label map
             if item.has_annotation():
                 if item.annotation not in self._id_label_map:
