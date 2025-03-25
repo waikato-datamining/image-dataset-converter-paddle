@@ -31,3 +31,10 @@ img/0003.jpg ann/0003.png
 
 Each line consists of the **relative image file name** and the associated 
 **relative annotation image file name** separated by a blank.
+
+### Custom separator
+
+In case file names have spaces in their names, you can use a custom
+separator (e.g., `;`) instead of the default space. In such a case, 
+you need to define the `separator: ;` property in the `train_dataset` 
+and `val_dataset` sections.
