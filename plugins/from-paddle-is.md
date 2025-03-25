@@ -8,7 +8,7 @@ Loads the image segmentation from the specified text files listing image (JPG wi
 usage: from-paddle-is [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                       [-N LOGGER_NAME] [-i [INPUT ...]] [-I [INPUT_LIST ...]]
                       [--resume_from RESUME_FROM] [--labels_file FILE]
-                      [--labels [LABEL ...]]
+                      [--labels [LABEL ...]] [--separator SEP]
 
 Loads the image segmentation from the specified text files listing image (JPG
 with relative path) and annotation image (indexed PNG with relative path). The
@@ -37,6 +37,8 @@ options:
                         {CWD}, {TMP} (default: None)
   --labels [LABEL ...]  The labels that the indices represent (incl
                         background). (default: None)
+  --separator SEP       The separator to use for reading the text files.
+                        (default: )
 ```
 
 Available placeholders:

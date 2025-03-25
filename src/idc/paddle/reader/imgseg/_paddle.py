@@ -13,7 +13,7 @@ from idc.api import Reader
 class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
-                 labels_file: str = None, labels: List[str] = None, resume_from: str = None,
+                 labels_file: str = None, labels: List[str] = None, separator: str = None, resume_from: str = None,
                  logger_name: str = None, logging_level: str = LOGGING_WARNING):
         """
         Initializes the reader.
@@ -26,6 +26,8 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         :type labels: list
         :param resume_from: the file to resume from (glob)
         :type resume_from: str
+        :param separator: the separator to use in the txt file (default is space)
+        :type separator: str
         :param logger_name: the name to use for the logger
         :type logger_name: str
         :param logging_level: the logging level to use
@@ -36,6 +38,7 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         self.source_list = source_list
         self.labels_file = labels_file
         self.labels = labels
+        self.separator = separator
         self.resume_from = resume_from
         self._inputs = None
         self._current_input = None
@@ -73,6 +76,7 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         parser.add_argument("--resume_from", type=str, help="Glob expression matching the file to resume from, e.g., '*/012345.txt'", required=False)
         parser.add_argument("--labels_file", metavar="FILE", type=str, default=None, help="The file with the labels associated with the indices (incl. background); " + placeholder_list(obj=self), required=False)
         parser.add_argument("--labels", metavar="LABEL", type=str, default=None, help="The labels that the indices represent (incl background).", nargs="*")
+        parser.add_argument("--separator", metavar="SEP", type=str, default=' ', help="The separator to use for reading the text files.", required=False)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):
@@ -88,6 +92,7 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         self.labels_file = ns.labels_file
         self.labels = ns.labels
         self.resume_from = ns.resume_from
+        self.separator = ns.separator
 
     def generates(self) -> List:
         """
@@ -130,6 +135,9 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         self.logger().info("# labels: %d" % len(self._labels))
         self.logger().debug("label mapping: %s" % str(self._label_mapping))
 
+        if self.separator is None:
+            self.separator = ' '
+
         self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt", resume_from=self.resume_from)
 
     def read(self) -> Iterable:
@@ -148,10 +156,10 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
                 line = line.strip()
                 if len(line) == 0:
                     continue
-                if " " in line:
+                if self.separator in line:
                     try:
-                        img_file = os.path.join(current_dir, line[0:line.rindex(" ")].strip())
-                        ann_file = os.path.join(current_dir, line[line.rindex(" ")+1:].strip())
+                        img_file = os.path.join(current_dir, line[0:line.rindex(self.separator)].strip())
+                        ann_file = os.path.join(current_dir, line[line.rindex(self.separator)+1:].strip())
                         ann = load_image_from_file(ann_file)
                         annotations = from_indexedpng(ann, self._labels, self._label_mapping, self.logger())
                         yield ImageSegmentationData(source=img_file, annotation=annotations)

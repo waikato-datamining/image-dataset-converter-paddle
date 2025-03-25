@@ -21,7 +21,7 @@ DEFAULT_ANNOTATIONS_RELATIVE_PATH = "ann"
 class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWriter, InputBasedPlaceholderSupporter):
 
     def __init__(self, output_dir: str = None, files: str = None, labels: str = None, img_relative_path: str = None,
-                 ann_relative_path: str = None, palette: str = None, annotations_only: bool = None,
+                 ann_relative_path: str = None, palette: str = None, annotations_only: bool = None, separator: str = None,
                  split_names: List[str] = None, split_ratios: List[int] = None,
                  logger_name: str = None, logging_level: str = LOGGING_WARNING):
         """
@@ -39,6 +39,10 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         :type ann_relative_path: str
         :param palette: the palette to use, either a supported palette name (auto|x11|light|dark) or comma-separated list of R,G,B values
         :type palette: str
+        :param annotations_only: whether to output only the annotations
+        :type annotations_only: bool
+        :param separator: the separator to use in the txt file (default is space)
+        :type separator: str
         :param split_names: the names of the splits, no splitting if None
         :type split_names: list
         :param split_ratios: the integer ratios of the splits (must sum up to 100)
@@ -56,6 +60,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         self.ann_relative_path = ann_relative_path
         self.palette = palette
         self.annotations_only = annotations_only
+        self.separator = separator
         self._files = None
         self._palette_list = None
         self._labels = None
@@ -93,6 +98,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         parser.add_argument("-a", "--ann_relative_path", metavar="PATH", type=str, default=DEFAULT_ANNOTATIONS_RELATIVE_PATH, help="The relative path to store the annotations under, e.g., 'ann'", required=False)
         parser.add_argument("-p", "--palette", metavar="PALETTE", type=str, default=PALETTE_AUTO, help="The palette to use; either palette name (%s) or comma-separated list of R,G,B values." % "|".join(palettes()), required=False)
         parser.add_argument("--labels", metavar="NAME", type=str, default=DEFAULT_LABELS_LIST, help="The name of the labels text file (no path), e.g., 'labels.txt'.", required=False)
+        parser.add_argument("--separator", metavar="SEP", type=str, default=' ', help="The separator to use for reading the text files.", required=False)
         add_annotations_only_param(parser)
         return parser
 
@@ -110,6 +116,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         self.img_relative_path = ns.img_relative_path
         self.ann_relative_path = ns.ann_relative_path
         self.palette = ns.palette
+        self.separator = ns.separator
         self.annotations_only = ns.annotations_only
 
     def accepts(self) -> List:
@@ -138,6 +145,8 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         self._palette_list = generate_palette_list(self.palette)
         if self.annotations_only is None:
             self.annotations_only = False
+        if self.separator is None:
+            self.separator = ' '
         self._files = dict()
         self._labels = list()
 
@@ -172,8 +181,14 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
             img_relative_name = os.path.join(self.img_relative_path, item.image_name)
             ann_relative_name = os.path.join(self.ann_relative_path, os.path.splitext(item.image_name)[0] + ".png")
 
+            # is separator part of file name?
+            if self.separator in img_relative_name:
+                raise Exception("Found separator '%s' in image name '%s'! This would create an unparsable dataset, use a custom separator instead!" % (self.separator, img_relative_name))
+            if self.separator in ann_relative_name:
+                raise Exception("Found separator '%s' in image name '%s'! This would create an unparsable dataset, use a custom separator instead!" % (self.separator, ann_relative_name))
+
             # update file map
-            self._files[split].append(img_relative_name + " " + ann_relative_name)
+            self._files[split].append(img_relative_name + self.separator + ann_relative_name)
 
             path = os.path.join(output_dir, img_relative_name)
             if not self.annotations_only:

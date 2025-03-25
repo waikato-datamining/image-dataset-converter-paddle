@@ -9,7 +9,7 @@ usage: to-paddle-is [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                     [-N LOGGER_NAME] [-r SPLIT_RATIOS [SPLIT_RATIOS ...]]
                     [-n SPLIT_NAMES [SPLIT_NAMES ...]] -o OUTPUT [-f NAME]
                     [-i PATH] [-a PATH] [-p PALETTE] [--labels NAME]
-                    [--annotations_only]
+                    [--separator SEP] [--annotations_only]
 
 Saves the image segmentation in the specified text files listing image (with
 relative path) and annotation (with relative path). The labels get stored in a
@@ -52,6 +52,8 @@ options:
                         values. (default: auto)
   --labels NAME         The name of the labels text file (no path), e.g.,
                         'labels.txt'. (default: labels.txt)
+  --separator SEP       The separator to use for reading the text files.
+                        (default: )
   --annotations_only    Outputs only the annotations and skips the base image.
                         (default: False)
 ```
