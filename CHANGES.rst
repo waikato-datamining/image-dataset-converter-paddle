@@ -11,6 +11,7 @@ Changelog
   space when file names should contain spaces as well
   (use `separator: ;` in the `train_dataset` and `val_dataset` sections)
 - the `to-paddle-ic` writer now raises an exception if it encounters a space in an image name
+- new grouping support added to writers via the `--split_group` option
 
 
 0.0.2 (2025-03-14)

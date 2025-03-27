@@ -164,7 +164,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         for item in make_list(data):
             split = ''
             if self.splitter is not None:
-                split = self.splitter.next()
+                split = self.splitter.next(item=item.image_name)
             if not self.annotations_only:
                 path = os.path.join(output_dir, self.img_relative_path)
                 if not os.path.exists(path):
