@@ -6,7 +6,7 @@ from seppl.placeholders import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
-from idc.api import ImageSegmentationData, load_image_from_file, from_indexedpng
+from idc.api import ImageSegmentationData, load_image_from_file, imgseg_from_indexedpng
 from idc.api import Reader
 
 
@@ -161,7 +161,7 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
                         img_file = os.path.join(current_dir, line[0:line.rindex(self.separator)].strip())
                         ann_file = os.path.join(current_dir, line[line.rindex(self.separator)+1:].strip())
                         ann = load_image_from_file(ann_file)
-                        annotations = from_indexedpng(ann, self._labels, self._label_mapping, self.logger())
+                        annotations = imgseg_from_indexedpng(ann, self._labels, self._label_mapping, self.logger())
                         yield ImageSegmentationData(source=img_file, annotation=annotations)
                     except:
                         self.logger().warning("Failed to parse: %s" % line)

@@ -6,7 +6,7 @@ from wai.logging import LOGGING_WARNING
 
 from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
 from idc.api import ImageSegmentationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
-    add_annotations_only_param, save_image, to_indexedpng
+    add_annotations_only_param, save_image, imgseg_to_indexedpng
 from simple_palette_utils import generate_palette_list, PALETTE_AUTO, palettes
 
 DEFAULT_FILE_LIST = "data.txt"
@@ -195,7 +195,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
                 self.logger().info("Writing image to: %s" % path)
                 item.save_image(path)
             path = os.path.join(output_dir, ann_relative_name)
-            ann = to_indexedpng(item.image_width, item.image_height, item.annotation, self._palette_list, background=0)
+            ann = imgseg_to_indexedpng(item.image_width, item.image_height, item.annotation, self._palette_list, background=0)
             self.logger().info("Writing annotations to: %s" % path)
             save_image(ann, path, make_dirs=True)
 
