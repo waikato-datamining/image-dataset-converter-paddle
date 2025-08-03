@@ -84,7 +84,11 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         :return: the description
         :rtype: str
         """
-        return "Saves the image segmentation in the specified text files listing image (with relative path) and annotation (with relative path). The labels get stored in a separate text file (one per line). When splitting, the split names get appended to the '--files' name (before the extension) separated by '-'."
+        return "Saves the image segmentation in the specified text files listing image (with relative path) and " \
+               "annotation (with relative path). The labels get stored in a separate text file (one per line). "\
+               "When splitting, the split names get appended to the '--files' name (before the extension) separated "\
+               "by '-'. Use the '--separator' option with ';' if your file names contain blanks. You then have to "\
+               "add 'separator: ;' to the 'train_dataset:' and 'val_dataset:' sections in the model config file."
 
     def _create_argparser(self) -> argparse.ArgumentParser:
         """
@@ -100,7 +104,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         parser.add_argument("-a", "--ann_relative_path", metavar="PATH", type=str, default=DEFAULT_ANNOTATIONS_RELATIVE_PATH, help="The relative path to store the annotations under, e.g., 'ann'", required=False)
         parser.add_argument("-p", "--palette", metavar="PALETTE", type=str, default=PALETTE_AUTO, help="The palette to use; either palette name (%s) or comma-separated list of R,G,B values." % "|".join(palettes()), required=False)
         parser.add_argument("--labels", metavar="NAME", type=str, default=DEFAULT_LABELS_LIST, help="The name of the labels text file (no path), e.g., 'labels.txt'.", required=False)
-        parser.add_argument("--separator", metavar="SEP", type=str, default=' ', help="The separator to use for reading the text files.", required=False)
+        parser.add_argument("--separator", metavar="SEP", type=str, default=' ', help="The separator to use for writing the text files.", required=False)
         add_annotations_only_param(parser)
         return parser
 

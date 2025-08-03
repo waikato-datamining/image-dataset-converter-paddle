@@ -2,7 +2,7 @@
 
 * accepts: idc.api.ImageSegmentationData
 
-Saves the image segmentation in the specified text files listing image (with relative path) and annotation (with relative path). The labels get stored in a separate text file (one per line). When splitting, the split names get appended to the '--files' name (before the extension) separated by '-'.
+Saves the image segmentation in the specified text files listing image (with relative path) and annotation (with relative path). The labels get stored in a separate text file (one per line). When splitting, the split names get appended to the '--files' name (before the extension) separated by '-'. Use the '--separator' option with ';' if your file names contain blanks. You then have to add 'separator: ;' to the 'train_dataset:' and 'val_dataset:' sections in the model config file.
 
 ```
 usage: to-paddle-is [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
@@ -16,7 +16,10 @@ usage: to-paddle-is [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 Saves the image segmentation in the specified text files listing image (with
 relative path) and annotation (with relative path). The labels get stored in a
 separate text file (one per line). When splitting, the split names get
-appended to the '--files' name (before the extension) separated by '-'.
+appended to the '--files' name (before the extension) separated by '-'. Use
+the '--separator' option with ';' if your file names contain blanks. You then
+have to add 'separator: ;' to the 'train_dataset:' and 'val_dataset:' sections
+in the model config file.
 
 options:
   -h, --help            show this help message and exit
@@ -61,7 +64,7 @@ options:
                         values. (default: auto)
   --labels NAME         The name of the labels text file (no path), e.g.,
                         'labels.txt'. (default: labels.txt)
-  --separator SEP       The separator to use for reading the text files.
+  --separator SEP       The separator to use for writing the text files.
                         (default: )
   --annotations_only    Outputs only the annotations and skips the base image.
                         (default: False)
