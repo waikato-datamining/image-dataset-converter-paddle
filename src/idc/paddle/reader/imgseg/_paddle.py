@@ -6,8 +6,8 @@ from seppl.placeholders import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
+from kasperl.api import Reader
 from idc.api import ImageSegmentationData, load_image_from_file, imgseg_from_indexedpng
-from idc.api import Reader
 
 
 class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):

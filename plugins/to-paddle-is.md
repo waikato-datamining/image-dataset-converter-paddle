@@ -66,8 +66,7 @@ options:
                         'labels.txt'. (default: labels.txt)
   --separator SEP       The separator to use for writing the text files.
                         (default: )
-  --annotations_only    Outputs only the annotations and skips the base image.
-                        (default: False)
+  --annotations_only    Outputs only the annotations. (default: False)
 ```
 
 Available placeholders:

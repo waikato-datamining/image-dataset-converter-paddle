@@ -5,8 +5,9 @@ from typing import List
 from wai.logging import LOGGING_WARNING
 
 from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
-from idc.api import ImageClassificationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
+from kasperl.api import make_list, SplittableStreamWriter, AnnotationsOnlyWriter, \
     add_annotations_only_param
+from idc.api import ImageClassificationData
 
 DEFAULT_ID_LABEL_MAP = "labels.map"
 

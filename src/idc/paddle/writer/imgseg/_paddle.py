@@ -5,8 +5,9 @@ from typing import List
 from wai.logging import LOGGING_WARNING
 
 from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
-from idc.api import ImageSegmentationData, SplittableStreamWriter, make_list, AnnotationsOnlyWriter, \
-    add_annotations_only_param, save_image, imgseg_to_indexedpng
+from kasperl.api import make_list, SplittableStreamWriter, AnnotationsOnlyWriter, \
+    add_annotations_only_param
+from idc.api import ImageSegmentationData, save_image, imgseg_to_indexedpng
 from simple_palette_utils import generate_palette_list, PALETTE_AUTO, palettes
 
 DEFAULT_FILE_LIST = "data.txt"

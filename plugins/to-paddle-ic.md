@@ -53,8 +53,7 @@ options:
   -m NAME, --id_label_map NAME
                         The name of the ID/label text mapping text file (no
                         path), e.g., 'labels.map'. (default: labels.map)
-  --annotations_only    Outputs only the annotations and skips the base image.
-                        (default: False)
+  --annotations_only    Outputs only the annotations. (default: False)
 ```
 
 Available placeholders:
