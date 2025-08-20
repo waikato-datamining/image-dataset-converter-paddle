@@ -6,7 +6,7 @@ from wai.logging import LOGGING_WARNING
 
 from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
 from kasperl.api import make_list, SplittableStreamWriter, AnnotationsOnlyWriter, \
-    add_annotations_only_param
+    add_annotations_only_writer_param
 from idc.api import ImageClassificationData
 
 DEFAULT_ID_LABEL_MAP = "labels.map"
@@ -84,7 +84,7 @@ class PaddleImageClassificationWriter(SplittableStreamWriter, AnnotationsOnlyWri
         parser.add_argument("-f", "--file_label_map", metavar="NAME", type=str, default=DEFAULT_FILE_LABEL_MAP, help="The text file to store the relation of images with their label indices in, e.g., 'annotations.txt'", required=False)
         parser.add_argument("-p", "--relative_path", metavar="PATH", type=str, default=DEFAULT_RELATIVE_PATH, help="The relative path to the annotations text file to store the images under, e.g., 'images'", required=False)
         parser.add_argument("-m", "--id_label_map", metavar="NAME", type=str, default=DEFAULT_ID_LABEL_MAP, help="The name of the ID/label text mapping text file (no path), e.g., 'labels.map'.", required=False)
-        add_annotations_only_param(parser)
+        add_annotations_only_writer_param(parser)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):

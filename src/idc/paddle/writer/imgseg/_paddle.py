@@ -6,7 +6,7 @@ from wai.logging import LOGGING_WARNING
 
 from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
 from kasperl.api import make_list, SplittableStreamWriter, AnnotationsOnlyWriter, \
-    add_annotations_only_param
+    add_annotations_only_writer_param
 from idc.api import ImageSegmentationData, save_image, imgseg_to_indexedpng
 from simple_palette_utils import generate_palette_list, PALETTE_AUTO, palettes
 
@@ -106,7 +106,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         parser.add_argument("-p", "--palette", metavar="PALETTE", type=str, default=PALETTE_AUTO, help="The palette to use; either palette name (%s) or comma-separated list of R,G,B values." % "|".join(palettes()), required=False)
         parser.add_argument("--labels", metavar="NAME", type=str, default=DEFAULT_LABELS_LIST, help="The name of the labels text file (no path), e.g., 'labels.txt'.", required=False)
         parser.add_argument("--separator", metavar="SEP", type=str, default=' ', help="The separator to use for writing the text files.", required=False)
-        add_annotations_only_param(parser)
+        add_annotations_only_writer_param(parser)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):
