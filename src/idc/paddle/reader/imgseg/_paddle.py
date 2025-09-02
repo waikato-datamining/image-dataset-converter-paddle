@@ -138,7 +138,7 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         if self.separator is None:
             self.separator = ' '
 
-        self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt", resume_from=self.resume_from)
+        self._inputs = None
 
     def read(self) -> Iterable:
         """
@@ -147,6 +147,8 @@ class PaddleImageSegmentationReader(Reader, PlaceholderSupporter):
         :return: the data
         :rtype: Iterable
         """
+        if self._inputs is None:
+            self._inputs = locate_files(self.source, input_lists=self.source_list, fail_if_empty=True, default_glob="*.txt", resume_from=self.resume_from)
         self._current_input = self._inputs.pop(0)
         self.session.current_input = self._current_input
         self.logger().info("Reading from: " + str(self.session.current_input))
