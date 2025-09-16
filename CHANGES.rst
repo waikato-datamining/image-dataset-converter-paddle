@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - switched to `kasperl` library for base API and generic pipeline plugins
+- added `idc-visualdl-info` tool for generating information from VisualDL log files (https://github.com/PaddlePaddle/VisualDL)
+- added `from-visualdl` reader for generating plot data from scalars
 
 
 0.0.4 (2025-07-11)

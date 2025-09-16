@@ -32,11 +32,15 @@ setup(
     packages=find_namespace_packages(where='src'),
     install_requires=[
         "image_dataset_converter",
+        "visualdl",
     ],
     version="0.0.4",
     author='Peter Reutemann',
     author_email='fracpete@waikato.ac.nz',
     entry_points={
+        "console_scripts": [
+            "idc-visualdl-info=idc.paddle.tool.visualdl_info:sys_main",
+        ],
         "class_lister": [
             "idc.paddle=idc.paddle.class_lister",
         ],
