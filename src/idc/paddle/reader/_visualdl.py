@@ -6,8 +6,12 @@ from seppl.placeholders import PlaceholderSupporter, placeholder_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
-from visualdl import LogReader
 from kasperl.api import Reader, XYPlot
+try:
+    from visualdl import LogReader
+except:
+    print("Failed to import LogReader, ~/.visualdl no available/accessible?")
+    LogReader = None
 
 
 class VisualDLReader(Reader, PlaceholderSupporter):
@@ -113,6 +117,10 @@ class VisualDLReader(Reader, PlaceholderSupporter):
             raise Exception("No tag specified!")
         if self.use_timestamp is None:
             self.use_timestamp = False
+
+        if LogReader is None:
+            self.session.stopped = True
+            raise Exception("Failed to import LogReader, cannot use reader!")
 
         self._inputs = None
 
