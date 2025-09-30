@@ -1,5 +1,6 @@
 import argparse
-import os.path
+import os
+import sys
 from typing import List, Iterable, Union
 
 from seppl.placeholders import PlaceholderSupporter, placeholder_list
@@ -7,10 +8,12 @@ from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
 from kasperl.api import Reader, XYPlot
+
+
 try:
     from visualdl import LogReader
 except:
-    print("Failed to import LogReader, ~/.visualdl no available/accessible?")
+    print("ERROR: Failed to import LogReader, ~/.visualdl no available/accessible?", file=sys.stderr)
     LogReader = None
 
 
@@ -119,8 +122,10 @@ class VisualDLReader(Reader, PlaceholderSupporter):
             self.use_timestamp = False
 
         if LogReader is None:
+            msg = "Failed to import LogReader, cannot use reader!"
+            self.logger().fatal(msg)
             self.session.stopped = True
-            raise Exception("Failed to import LogReader, cannot use reader!")
+            raise Exception(msg)
 
         self._inputs = None
 
