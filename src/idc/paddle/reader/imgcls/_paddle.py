@@ -2,7 +2,7 @@ import argparse
 import os.path
 from typing import List, Iterable, Union
 
-from seppl.placeholders import PlaceholderSupporter, placeholder_list
+from seppl.variables import VariableSupporter, variable_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
@@ -10,7 +10,7 @@ from kasperl.api import Reader
 from idc.api import ImageClassificationData
 
 
-class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
+class PaddleImageClassificationReader(Reader, VariableSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
                  id_label_map: str = None, resume_from: str = None,
@@ -64,10 +64,10 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
-        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-i", "--input", type=str, help="Path to the text file(s) to read; glob syntax is supported; " + variable_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the text files to use; " + variable_list(obj=self), required=False, nargs="*")
         parser.add_argument("--resume_from", type=str, help="Glob expression matching the file to resume from, e.g., '*/012345.txt'", required=False)
-        parser.add_argument("-m", "--id_label_map", metavar="FILE", type=str, default=None, help="The mapping between label ID and text (ID <space> text); " + placeholder_list(obj=self), required=False)
+        parser.add_argument("-m", "--id_label_map", metavar="FILE", type=str, default=None, help="The mapping between label ID and text (ID <space> text); " + variable_list(obj=self), required=False)
         return parser
 
     def _apply_args(self, ns: argparse.Namespace):
@@ -101,7 +101,7 @@ class PaddleImageClassificationReader(Reader, PlaceholderSupporter):
         self._id_label_map = None
         if self.id_label_map is not None:
             self._id_label_map = dict()
-            id_label_map = self.session.expand_placeholders(self.id_label_map)
+            id_label_map = self.session.expand_variables(self.id_label_map)
             self.logger().info("Loading ID/label map: %s" % id_label_map)
             with (open(id_label_map) as fp):
                 for line in fp.readlines():

@@ -7,7 +7,7 @@ import sys
 import traceback
 
 from wai.logging import init_logging, set_logging_level, add_logging_level
-from seppl.placeholders import placeholder_list
+from seppl.variables import variable_list
 from visualdl import LogReader
 from idc.core import ENV_IDC_LOGLEVEL
 
@@ -96,7 +96,7 @@ def main(args=None):
         description="Tool for outputting information on VisualDL log files.",
         prog=VISUALDL_INFO,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--log_file", type=str, help="The log file to read; " + placeholder_list(input_based=False), default=None, required=True)
+    parser.add_argument("--log_file", type=str, help="The log file to read; " + variable_list(input_based=False), default=None, required=True)
     parser.add_argument("-i", "--info_type", choices=INFO_TYPES, help="The type of information to generate.", default=INFO_TAGS, required=False)
     parser.add_argument("-c", "--component", type=str, help="The component for which to output the data, e.g., 'scalar'.", default=None, required=False)
     parser.add_argument("-t", "--tag", type=str, help="The tag for which to output the data, e.g., 'Evaluate/mIoU'.", default=None, required=False)

@@ -3,7 +3,7 @@ import os
 import sys
 from typing import List, Iterable, Union
 
-from seppl.placeholders import PlaceholderSupporter, placeholder_list
+from seppl.variables import VariableSupporter, variable_list
 from seppl.io import locate_files
 from wai.logging import LOGGING_WARNING
 
@@ -17,7 +17,7 @@ except:
     LogReader = None
 
 
-class VisualDLReader(Reader, PlaceholderSupporter):
+class VisualDLReader(Reader, VariableSupporter):
 
     def __init__(self, source: Union[str, List[str]] = None, source_list: Union[str, List[str]] = None,
                  resume_from: str = None, component: str = None, tag: str = None, use_timestamp: bool = None,
@@ -76,8 +76,8 @@ class VisualDLReader(Reader, PlaceholderSupporter):
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-i", "--input", type=str, help="Path to the log file(s) to read; glob syntax is supported; " + placeholder_list(obj=self), required=False, nargs="*")
-        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the log files to use; " + placeholder_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-i", "--input", type=str, help="Path to the log file(s) to read; glob syntax is supported; " + variable_list(obj=self), required=False, nargs="*")
+        parser.add_argument("-I", "--input_list", type=str, help="Path to the text file(s) listing the log files to use; " + variable_list(obj=self), required=False, nargs="*")
         parser.add_argument("--resume_from", type=str, help="Glob expression matching the file to resume from, e.g., './vdlrecords.*.log'", required=False)
         parser.add_argument("-c", "--component", type=str, default="scalar", help="The component to load from the log file, e.g., 'scalar'.", required=False)
         parser.add_argument("-t", "--tag", type=str, default=None, help="The tag to load from the log file, e.g., 'Evaluate/mIoU'.", required=True)

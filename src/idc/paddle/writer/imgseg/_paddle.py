@@ -4,7 +4,7 @@ from typing import List
 
 from wai.logging import LOGGING_WARNING
 
-from seppl.placeholders import placeholder_list, InputBasedPlaceholderSupporter
+from seppl.variables import InputBasedVariableSupporter, variable_list
 from kasperl.api import make_list, SplittableStreamWriter, AnnotationsOnlyWriter, \
     add_annotations_only_writer_param
 from idc.api import ImageSegmentationData, save_image, imgseg_to_indexedpng
@@ -19,7 +19,7 @@ DEFAULT_IMAGES_RELATIVE_PATH = "img"
 DEFAULT_ANNOTATIONS_RELATIVE_PATH = "ann"
 
 
-class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWriter, InputBasedPlaceholderSupporter):
+class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWriter, InputBasedVariableSupporter):
 
     def __init__(self, output_dir: str = None, files: str = None, labels: str = None, img_relative_path: str = None,
                  ann_relative_path: str = None, palette: str = None, annotations_only: bool = None, separator: str = None,
@@ -99,7 +99,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         :rtype: argparse.ArgumentParser
         """
         parser = super()._create_argparser()
-        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there. " + placeholder_list(obj=self), required=True)
+        parser.add_argument("-o", "--output", type=str, help="The directory to store the data in. Any defined splits get added beneath there. " + variable_list(obj=self), required=True)
         parser.add_argument("-f", "--files", metavar="NAME", type=str, default=DEFAULT_FILE_LIST, help="The text file to store the relation of images with their label indices in, e.g., 'data.txt'", required=False)
         parser.add_argument("-i", "--img_relative_path", metavar="PATH", type=str, default=DEFAULT_IMAGES_RELATIVE_PATH, help="The relative path to store the images under, e.g., 'img'", required=False)
         parser.add_argument("-a", "--ann_relative_path", metavar="PATH", type=str, default=DEFAULT_ANNOTATIONS_RELATIVE_PATH, help="The relative path to store the annotations under, e.g., 'ann'", required=False)
@@ -163,7 +163,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
 
         :param data: the data to write (single record or iterable of records)
         """
-        output_dir = self.session.expand_placeholders(self.output_dir)
+        output_dir = self.session.expand_variables(self.output_dir)
         if (not self._output_dir_created) and (not os.path.exists(output_dir)):
             self._output_dir_created = True
             self.logger().info("Creating output dir: %s" % output_dir)
@@ -212,7 +212,7 @@ class PaddleImageSegmentationWriter(SplittableStreamWriter, AnnotationsOnlyWrite
         """
         super().finalize()
         first = True
-        output_dir = self.session.expand_placeholders(self.output_dir)
+        output_dir = self.session.expand_variables(self.output_dir)
         for sub_set in self._files:
             # write label list
             if first:
